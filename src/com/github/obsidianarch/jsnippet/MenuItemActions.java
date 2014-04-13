@@ -1,5 +1,6 @@
 package com.github.obsidianarch.jsnippet;
 
+import java.awt.Color;
 import java.io.PrintStream;
 
 import javax.swing.JOptionPane;
@@ -16,21 +17,29 @@ public class MenuItemActions {
     // Constants
     //
     
+    /** The actual System.out */
     private static final PrintStream realOut = System.out;
+    
+    /** The actual System.in */
     private static final PrintStream realErr = System.err;
     
     //
     //  Menu Items
     //
 
+    /**
+     * Builds the file.
+     * 
+     * @param frame
+     *            The frame.
+     */
     public static void build( JSnippetFrame frame ) {
-        frame.getBuildStream().write( '\u2136' );
+        frame.getBuildConsole().getTextComponent().setText( "" );
+        frame.getBuildConsole().redirectOut();
+        frame.getBuildConsole().redirectErr( Color.RED, null );
 
         String source = frame.getTextArea().getText();
         String className = JSnippet.getClassName( source );
-        
-        System.setOut( frame.getBuildStream() ); // redirect all build messages to the console
-        System.setErr( frame.getBuildStream() );
         
         if ( !JSnippet.compileSource( className, source ) ) {
             JOptionPane.showMessageDialog( frame, "Check console for errors!", "Compile Errors", JOptionPane.ERROR_MESSAGE );
@@ -40,11 +49,16 @@ public class MenuItemActions {
         System.setErr( realErr );
     }
     
+    /**
+     * Runs the build source file.
+     * 
+     * @param frame
+     *            The frame.
+     */
     public static void execute( JSnippetFrame frame ) {
-        frame.getOutputStream().write( '\u2136' );
-
-        System.setOut( frame.getOutputStream() );
-        System.setErr( frame.getOutputStream() );
+        frame.getOutputConsole().getTextComponent().setText( "" );
+        frame.getOutputConsole().redirectOut();
+        frame.getOutputConsole().redirectErr( Color.RED, null );
         
         try {
             JSnippet.executeClass( JSnippet.getClassName( frame.getTextArea().getText() ) );
@@ -57,32 +71,65 @@ public class MenuItemActions {
         System.setErr( realErr );
     }
 
+    /**
+     * Builds the file, then executes it.
+     * 
+     * @param frame
+     *            The frame.
+     */
     public static void buildAndExecute( JSnippetFrame frame ) {
         build( frame );
         execute( frame );
     }
     
+    /**
+     * Cleans up, then exits.
+     */
     public static void exit() {
         JSnippet.cleanup();
         System.exit( 0 );
     }
     
+    /**
+     * Edits the run arguments passed by the executor.
+     * 
+     * @param frame
+     *            The frame.
+     */
     public static void editRunArgs( JSnippetFrame frame ) {
         JSnippet.runArguments = JOptionPane.showInputDialog( frame, "Edit Run Argumetns", JSnippet.runArguments );
     }
     
+    /**
+     * Resets the default text to the program's original.
+     * 
+     * @param frame
+     *            The frame.
+     */
     public static void resetDefaultText( JSnippetFrame frame ) {
         JSnippet.DEFAULT_TEXT.delete();
         JSnippet.copyText( "/res/DefaultText.txt", JSnippet.DEFAULT_TEXT );
         JOptionPane.showMessageDialog( frame, "Default text reset" );
     }
     
+    /**
+     * Resets the default templates to the program's original.
+     * 
+     * @param frame
+     *            The frame.
+     */
     public static void resetTemplates( JSnippetFrame frame ) {
         JSnippet.TEMPLATES.delete();
         JSnippet.copyText( "/res/templates.txt", JSnippet.TEMPLATES );
         JOptionPane.showMessageDialog( frame, "Templates reset" );
     }
     
+    /**
+     * Resets the default templates to the program's original.
+     * 
+     * @param frame
+     *            The frame.
+     */
     public static void resetKeywords( JSnippetFrame frame ) {
         JSnippet.KEYWORDS.delete();
         JSnippet.copyText( "/res/keywords.txt", JSnippet.KEYWORDS );

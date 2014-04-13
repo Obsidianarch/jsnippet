@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.PrintStream;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,8 +21,11 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.github.obsidianarch.swingext.SimpleFrame;
+import com.wordpress.tips4java.MessageConsole;
 
 /**
+ * The design of the frame.
+ * 
  * @author Austin
  */
 public class JSnippetFrame extends SimpleFrame {
@@ -32,12 +34,10 @@ public class JSnippetFrame extends SimpleFrame {
     // Fields
     //
     
-    /** The stream for the text pane displaying build progress. */
-    private final PrintStream buildStream;
+    private final MessageConsole buildConsole;
     
-    /** The stream for the text pane displaying the program's output. */
-    private final PrintStream outputStream;
-    
+    private final MessageConsole outputConsole;
+
     //
     // Components
     //
@@ -47,9 +47,6 @@ public class JSnippetFrame extends SimpleFrame {
     
     /** Where all of the text editing happens. */
     private RSyntaxTextArea   textArea;
-    
-    /** The tabbed pane at the bottom of the screen for logs. */
-    private JTabbedPane       tabbedPane;
     
     /** Any problems compiling the code. */
     private JTextPane         buildLog;
@@ -126,6 +123,7 @@ public class JSnippetFrame extends SimpleFrame {
                 buildLog = new JTextPane();
                 buildLog.setFont( new Font( "Consolas", Font.PLAIN, 10 ) );
                 buildLog.setEditable( false );
+                buildLog.setAutoscrolls( true );
                 {
                     JTabbedPane tabbedPane = new JTabbedPane();
                     tabbedPane.addTab( "Build Log", null, new JScrollPane( buildLog ), null );
@@ -135,6 +133,7 @@ public class JSnippetFrame extends SimpleFrame {
                 outputLog = new JTextPane();
                 outputLog.setFont( new Font( "Consolas", Font.PLAIN, 10 ) );
                 outputLog.setEditable( false );
+                outputLog.setAutoscrolls( true );
                 {
                     JTabbedPane tabbedPane = new JTabbedPane();
                     tabbedPane.addTab( "Output Log", null, new JScrollPane( outputLog ), null );
@@ -156,8 +155,11 @@ public class JSnippetFrame extends SimpleFrame {
             addMenuItem( "Edit", "Reset Keywords File" ).setActionCommand( "resetKeywords" );
         }
         
-        buildStream = new PrintStream( new TextAreaOutputStream( buildLog ) );
-        outputStream = new PrintStream( new TextAreaOutputStream( outputLog ) );
+        buildConsole = new MessageConsole( buildLog );
+        buildConsole.setMessageLines( JSnippet.maxPaneLines );
+
+        outputConsole = new MessageConsole( outputLog );
+        outputConsole.setMessageLines( JSnippet.maxPaneLines );
     }
     
     //
@@ -172,16 +174,16 @@ public class JSnippetFrame extends SimpleFrame {
     }
     
     /**
-     * @return The PrintStream to write to the build console.
+     * @return The MessageConsole used for the build output.
      */
-    public PrintStream getBuildStream() {
-        return buildStream;
+    public MessageConsole getBuildConsole() {
+        return buildConsole;
     }
     
     /**
-     * @return The PrintStream to write to the output console.
+     * @return The MessageConsole use for the program output.
      */
-    public PrintStream getOutputStream() {
-        return outputStream;
+    public MessageConsole getOutputConsole() {
+        return outputConsole;
     }
 }

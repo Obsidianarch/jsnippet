@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
+ * A nice utility that uses the Reflections API to invoke methods on separate threads.
+ * 
  * @author Austin
  */
 public class ThreadingUtility implements Runnable {

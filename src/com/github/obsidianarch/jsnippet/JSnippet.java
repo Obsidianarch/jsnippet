@@ -26,29 +26,40 @@ public class JSnippet {
     // Fields
     //
     
+    /** Arguments passed to the main method when run */
+    public static String              runArguments = "";
+    
+    /** Maximum number of characters in a text pane. */
+    public static int                 maxPaneLines = 1000;
+
     /** Our compiler for our java source. */
     private static final JavaCompiler compiler     = ToolProvider.getSystemJavaCompiler();
 
-    /** Arguments passed to the main method when run */
-    public static String              runArguments = "";
-
+    /** The temporary directory where all the program files are. */
     public static final File          TEMP_DIR     = new File( System.getProperty( "user.home" ), ".jsnippet" );
     
+    /** The default text for the editor. */
     public static final File          DEFAULT_TEXT = new File( TEMP_DIR, "res/DefaultText.txt" );
     
+    /** The code templates for autocompletion. */
     public static final File          TEMPLATES    = new File( TEMP_DIR, "res/templates.txt" );
     
+    /** Keywords for the editor's syntax highlighter. */
     public static final File          KEYWORDS     = new File( TEMP_DIR, "res/keywords.txt" );
 
+    /** The last created .java file. */
     private static File               sourceFile;
     
+    /** The last created .class file. */
     private static File               binaryFile;
 
     static {
+        // make the temporary directory
         if ( !TEMP_DIR.exists() ) {
             TEMP_DIR.mkdir();
         }
 
+        // copy the new files into the program directory
         try {
             copyText( "/res/DefaultText.txt", DEFAULT_TEXT );
             copyText( "/res/keywords.txt", TEMPLATES );
@@ -185,7 +196,16 @@ public class JSnippet {
 
         int result = compiler.run( null, null, System.err, sourceFile.getAbsolutePath() );
 
-        System.out.printf( "Build %s (%d milliseconds)%n", ( result == 0 ? "SUCCESS" : "FAILED" ), System.currentTimeMillis() - start );
+        System.out.print( "Build " );
+        System.out.flush();
+        if ( result == 0 ) {
+            System.out.print( "SUCCESS" );
+        }
+        else {
+            System.err.print( "FAILURE" );
+            System.err.flush();
+        }
+        System.out.printf( " (%d milliseconds)%n", System.currentTimeMillis() - start );
 
         return result == 0;
     }
@@ -234,7 +254,7 @@ public class JSnippet {
         
         Theme theme = null;
         try {
-            theme = Theme.load( JSnippet.class.getResourceAsStream( "/eclipse_theme.xml" ) );
+            theme = Theme.load( JSnippet.class.getResourceAsStream( "/res/eclipse_theme.xml" ) );
         }
         catch ( Exception e ) {
             showError( e, "When loading the Eclipse theme!" );
