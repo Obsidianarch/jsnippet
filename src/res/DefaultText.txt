@@ -1,0 +1,12 @@
+import java.util.*;
+import java.io.*;
+import javax.swing.*;
+import java.awt.*;
+
+public class Snippet {
+
+    public static void main( String[] args ) {
+        
+    }
+
+}

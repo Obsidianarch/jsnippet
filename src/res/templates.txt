@@ -1,0 +1,6 @@
+sysout
+System.out.println( "" );
+Prints to the standard output
+syserr
+System.err.println( "" );
+Prints to the standard error
