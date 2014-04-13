@@ -149,6 +149,7 @@ public class JSnippetFrame extends SimpleFrame {
             addMenuItem( "File", "Exit" ).setActionCommand( "exit" );
             
             addMenuItem( "Edit", "Run Arguments" ).setActionCommand( "editRunArgs" );
+            addMenuItem( "Edit", "Console Line Limits" ).setActionCommand( "editLineLimit" );
             addSeparator( "Edit" );
             addMenuItem( "Edit", "Reset Default Text" ).setActionCommand( "resetDefaultText" );
             addMenuItem( "Edit", "Reset Template File" ).setActionCommand( "resetTemplates" );
@@ -156,10 +157,10 @@ public class JSnippetFrame extends SimpleFrame {
         }
         
         buildConsole = new MessageConsole( buildLog );
-        buildConsole.setMessageLines( JSnippet.maxPaneLines );
+        buildConsole.setMessageLines( JSnippet.consoleLineLimit );
 
         outputConsole = new MessageConsole( outputLog );
-        outputConsole.setMessageLines( JSnippet.maxPaneLines );
+        outputConsole.setMessageLines( JSnippet.consoleLineLimit );
     }
     
     //

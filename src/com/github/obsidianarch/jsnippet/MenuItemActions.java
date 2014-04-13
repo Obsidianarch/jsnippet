@@ -101,6 +101,42 @@ public class MenuItemActions {
     }
     
     /**
+     * Edits the maximum number of lines the consoles will display.
+     * 
+     * @param frame
+     *            The frame.
+     */
+    public static void editLineLimit( JSnippetFrame frame ) {
+        String newNumber = JOptionPane.showInputDialog( frame, "Edit Console Line Limit", JSnippet.consoleLineLimit + "" );
+        
+        if ( newNumber == null ) return;
+
+        try {
+            int i = Integer.parseInt( newNumber );
+            JSnippet.consoleLineLimit = i;
+        }
+        catch ( NumberFormatException e ) {
+            // the user doesn't know what a number is
+            // let's teach them, by parsing their input
+            // as a number.
+            
+            int i = 0;
+            for ( char c : newNumber.toCharArray() ) {
+                i += c; // lol
+            }
+            
+            JSnippet.consoleLineLimit = i;
+            
+            // sass the user
+            String format = "Line limit set to %n%d%nConverted from%n%s%nBecause you don't understand integers.";
+            JOptionPane.showMessageDialog( frame, String.format( format, JSnippet.consoleLineLimit, newNumber ) );
+        }
+        
+        frame.getBuildConsole().setMessageLines( JSnippet.consoleLineLimit );
+        frame.getOutputConsole().setMessageLines( JSnippet.consoleLineLimit );
+    }
+
+    /**
      * Resets the default text to the program's original.
      * 
      * @param frame

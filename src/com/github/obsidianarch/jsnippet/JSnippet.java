@@ -30,7 +30,7 @@ public class JSnippet {
     public static String              runArguments = "";
     
     /** Maximum number of characters in a text pane. */
-    public static int                 maxPaneLines = 1000;
+    public static int                 consoleLineLimit = 1000;
 
     /** Our compiler for our java source. */
     private static final JavaCompiler compiler     = ToolProvider.getSystemJavaCompiler();
