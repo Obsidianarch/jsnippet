@@ -3,4 +3,9 @@ JSnippet
 
 Single File Java Editor and Compiler.  
 
-Dependent upon my [SwingExt](https://github.com/Obsidianarch/swingext) library.
+Dependencies
+========
+
+[SwingExt](https://github.com/Obsidianarch/swingext)  
+[RSyntaxTextArea](https://github.com/bobbylight/RSyntaxTextArea/)  
+[AutoComplete](https://github.com/bobbylight/AutoComplete/)
