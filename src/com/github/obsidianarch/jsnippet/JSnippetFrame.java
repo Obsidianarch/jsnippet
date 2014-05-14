@@ -1,5 +1,7 @@
 package com.github.obsidianarch.jsnippet;
 
+import static javax.swing.KeyStroke.*;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -34,8 +36,10 @@ public class JSnippetFrame extends SimpleFrame {
     // Fields
     //
     
+    /** The console that displays build messages to the user. */
     private final MessageConsole buildConsole;
     
+    /** The console that displays the output from the program to the user. */
     private final MessageConsole outputConsole;
 
     //
@@ -90,7 +94,9 @@ public class JSnippetFrame extends SimpleFrame {
                     JSnippet.showError( e, "Reading default text" );
                 }
                 textArea.setText( sb.toString() );
-
+                
+                textArea.setTabsEmulated( true );
+                textArea.setTabSize( 4 );
                 textArea.setSyntaxEditingStyle( SyntaxConstants.SYNTAX_STYLE_JAVA );
                 textArea.setCodeFoldingEnabled( true );
                 textArea.setAntiAliasingEnabled( true );
@@ -106,6 +112,7 @@ public class JSnippetFrame extends SimpleFrame {
                 contentPane.add( new RTextScrollPane( textArea ) );
             }
             
+            /* Unfortunately, we are making an anonymous class for this. */
             JSplitPane panel = new JSplitPane() {
                 
                 @Override
@@ -114,6 +121,7 @@ public class JSnippetFrame extends SimpleFrame {
                 }
                 
             };
+
             panel.setContinuousLayout( true );
             panel.setResizeWeight( 0.5 );
             panel.setPreferredSize( new Dimension( 5, 250 ) );
@@ -142,13 +150,13 @@ public class JSnippetFrame extends SimpleFrame {
 
             }
             
-            addMenuItem( "File", "Build" ).setActionCommand( "build" );;
-            addMenuItem( "File", "Execute" ).setActionCommand( "execute" );
-            addMenuItem( "File", "Build and Execute" ).setActionCommand( "buildAndExecute" );
+            addMenuItem( getKeyStroke( "F6" ), "File", "Build" ).setActionCommand( "build" );
+            addMenuItem( getKeyStroke( "control F5" ), "File", "Execute" ).setActionCommand( "execute" );
+            addMenuItem( getKeyStroke( "F5" ), "File", "Build and Execute" ).setActionCommand( "buildAndExecute" );
             addSeparator( "File" );
-            addMenuItem( "File", "Exit" ).setActionCommand( "exit" );
+            addMenuItem( getKeyStroke( "alt F4" ), "File", "Exit" ).setActionCommand( "exit" );
             
-            addMenuItem( "Edit", "Run Arguments" ).setActionCommand( "editRunArgs" );
+            addMenuItem( getKeyStroke( "control shift R" ), "Edit", "Run Arguments" ).setActionCommand( "editRunArgs" );
             addMenuItem( "Edit", "Console Line Limits" ).setActionCommand( "editLineLimit" );
             addSeparator( "Edit" );
             addMenuItem( "Edit", "Reset Default Text" ).setActionCommand( "resetDefaultText" );

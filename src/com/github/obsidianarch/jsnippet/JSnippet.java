@@ -6,9 +6,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -52,6 +51,9 @@ public class JSnippet {
     
     /** The last created .class file. */
     private static File               binaryFile;
+    
+    /** Date format that displays, the hour, minute, second, and millisecond of the time. */
+    private static final SimpleDateFormat dateFormat       = new SimpleDateFormat( "HH:mm:ss:SSSS" );
 
     static {
         // make the temporary directory
@@ -220,20 +222,82 @@ public class JSnippet {
         if ( ( binaryFile == null ) || !binaryFile.exists() ) return;
 
         try {
-            URL[] urls = new URL[ ] { TEMP_DIR.toURI().toURL() };
-            URLClassLoader cl = new URLClassLoader( urls );
-            {
-                Class< ? > clazz = cl.loadClass( className );
-                Method method = clazz.getDeclaredMethod( "main", String[].class );
-                method.invoke( null, new Object[ ] { runArguments.split( " " ) } ); // the nesting into an object array prevents the expansion when varargs is applied
+            //            URL[] urls = new URL[ ] { TEMP_DIR.toURI().toURL() };
+            //            URLClassLoader cl = new URLClassLoader( urls );
+            //            {
+            //                Class< ? > clazz = cl.loadClass( className );
+            //                Method method = clazz.getDeclaredMethod( "main", String[].class );
+            //                method.invoke( null, new Object[ ] { runArguments.split( " " ) } ); // the nesting into an object array prevents the expansion when varargs is applied
+            //            }
+            //            cl.close();
+            
+            String[] parameters = new String[ ] {
+                "java",
+                "-cp",
+                TEMP_DIR.getAbsolutePath(),
+                binaryFile.getName().substring( 0, binaryFile.getName().indexOf( '.' ) )
+            };
+
+            Process process = Runtime.getRuntime().exec( parameters ); // execute the file in a different process
+
+            BufferedReader standardOutput = new BufferedReader( new InputStreamReader( process.getInputStream() ) ); // the standard output from the program
+            BufferedReader errorOutput = new BufferedReader( new InputStreamReader( process.getErrorStream() ) ); // the error output from the program
+            
+            String outLine = null;
+            String errLine = null;
+
+            while ( process.isAlive()    // the process is still running
+                ||  standardOutput.ready() // or the process has closed and there is unoutputted values
+                ||  errorOutput.ready()
+                ) {
+                
+                if ( standardOutput.ready() && ( ( outLine = standardOutput.readLine() ) != null ) ) {
+                    System.out.println( outLine );
+                    System.out.flush();
+                }
+                
+                if ( errorOutput.ready() && ( ( errLine = errorOutput.readLine() ) != null ) ) {
+                    System.err.println( errLine );
+                    System.err.flush();
+                }
+
             }
-            cl.close();
+
+            standardOutput.close();
+            errorOutput.close();
+            
+            if ( process.exitValue() != 0 ) {
+                System.err.printf( "%n!!! Exit Value = %d !!!", process.exitValue() );
+                System.err.flush();
+            }
+            
         }
         catch ( Exception e ) {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Prints the time with a message along with it.
+     * 
+     * @param message
+     *            the message to display before the time.
+     */
+    public static final void printTime( String message ) {
+        System.out.printf( "[%s: %s]%n", message, getTime() );
+    }
 
+    //
+    // Getters
+    //
+    
+    /**
+     * @return The current time with hours, minutes, seconds, and milliseconds.
+     */
+    public static final String getTime() {
+        return dateFormat.format( new Date() );
+    }
+    
     //
     // Main
     //

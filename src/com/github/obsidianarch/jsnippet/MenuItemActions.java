@@ -1,7 +1,6 @@
 package com.github.obsidianarch.jsnippet;
 
 import java.awt.Color;
-import java.io.PrintStream;
 
 import javax.swing.JOptionPane;
 
@@ -12,16 +11,6 @@ import javax.swing.JOptionPane;
  * @author Austin
  */
 public class MenuItemActions {
-    
-    //
-    // Constants
-    //
-    
-    /** The actual System.out */
-    private static final PrintStream realOut = System.out;
-    
-    /** The actual System.in */
-    private static final PrintStream realErr = System.err;
     
     //
     //  Menu Items
@@ -38,6 +27,8 @@ public class MenuItemActions {
         frame.getBuildConsole().redirectOut();
         frame.getBuildConsole().redirectErr( Color.RED, null );
 
+        JSnippet.printTime( "Build Start" );
+
         String source = frame.getTextArea().getText();
         String className = JSnippet.getClassName( source );
         
@@ -45,8 +36,7 @@ public class MenuItemActions {
             JOptionPane.showMessageDialog( frame, "Check console for errors!", "Compile Errors", JOptionPane.ERROR_MESSAGE );
         }
         
-        System.setOut( realOut );
-        System.setErr( realErr );
+        JSnippet.printTime( "Build Ended" );
     }
     
     /**
@@ -59,7 +49,9 @@ public class MenuItemActions {
         frame.getOutputConsole().getTextComponent().setText( "" );
         frame.getOutputConsole().redirectOut();
         frame.getOutputConsole().redirectErr( Color.RED, null );
-        
+
+        JSnippet.printTime( "Execution Start" );
+
         try {
             JSnippet.executeClass( JSnippet.getClassName( frame.getTextArea().getText() ) );
         }
@@ -67,8 +59,7 @@ public class MenuItemActions {
             e.printStackTrace();
         }
         
-        System.setOut( realOut );
-        System.setErr( realErr );
+        JSnippet.printTime( "Execution Ended" );
     }
 
     /**
@@ -97,7 +88,8 @@ public class MenuItemActions {
      *            The frame.
      */
     public static void editRunArgs( JSnippetFrame frame ) {
-        JSnippet.runArguments = JOptionPane.showInputDialog( frame, "Edit Run Argumetns", JSnippet.runArguments );
+        JSnippet.runArguments = JOptionPane.showInputDialog( frame, "Edit Run Arguments", JSnippet.runArguments );
+        if ( JSnippet.runArguments == null ) JSnippet.runArguments = ""; // prevent it from being null!
     }
     
     /**
