@@ -50,7 +50,7 @@ public class MenuItemActions {
         frame.getOutputConsole().redirectOut();
         frame.getOutputConsole().redirectErr( Color.RED, null );
 
-        JSnippet.printTime( "Execution Start" );
+        JSnippet.printTime( "Process Start" );
 
         try {
             JSnippet.executeClass( JSnippet.getClassName( frame.getTextArea().getText() ) );
@@ -59,7 +59,7 @@ public class MenuItemActions {
             e.printStackTrace();
         }
         
-        JSnippet.printTime( "Execution Ended" );
+        // process ended message displayed when the process is ended
     }
 
     /**

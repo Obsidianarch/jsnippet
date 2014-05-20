@@ -62,12 +62,60 @@ public class ExecutionService {
         Thread errThread = new Thread( errManager );
         errThread.setName( "Standard Error Manager" );
         errThread.start();
+        
+        Thread exitThread = new Thread( new ExitListener( currentProcess ) );
+        exitThread.setName( "Exit Listener Thread" );
+        exitThread.start();
     }
     
     //
     // Nested Classes
     //
 
+    public static class ExitListener implements Runnable {
+        
+        //
+        // Fields
+        //
+        
+        /** The process that we're listening to. */
+        private final Process process;
+
+        //
+        // Constructors
+        //
+
+        public ExitListener( Process process ) {
+            this.process = process;
+        }
+        
+        //
+        // Overrides
+        //
+        
+        @Override
+        public void run() {
+            try {
+                int exitCode = process.waitFor();
+                
+                if ( exitCode != 0 ) {
+                    System.err.printf( "Exit code: %d%n", exitCode );
+                }
+
+                JSnippet.printTime( "Process Ended" );
+            }
+            catch ( InterruptedException e ) {
+                System.err.println( "Failed to wait for process exit!" );
+            }
+        }
+
+    }
+
+    /**
+     * Manages output from the process.
+     * 
+     * @author Austin
+     */
     private static class OutputManager implements Runnable {
         
         //
@@ -134,7 +182,7 @@ public class ExecutionService {
         public void run() {
             try {
 
-                while ( currentProcess.isAlive() ) {
+                while ( currentProcess.isAlive() || input.ready() ) {
                     
                     if ( input.ready() ) {
                         output.print( readOutput() );
