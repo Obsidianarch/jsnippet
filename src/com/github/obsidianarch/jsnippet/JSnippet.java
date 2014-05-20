@@ -213,70 +213,22 @@ public class JSnippet {
     }
     
     /**
-     * Executes the class that was compiled with the given class name.
+     * Executes the compiled binary file.
      * 
-     * @param className
-     *            The class name to execute.
+     * @param fileName
+     *            The file name.
      */
-    public static void executeClass( String className ) {
+    public static final void executeClass( String fileName ) {
         if ( ( binaryFile == null ) || !binaryFile.exists() ) return;
 
         try {
-            //            URL[] urls = new URL[ ] { TEMP_DIR.toURI().toURL() };
-            //            URLClassLoader cl = new URLClassLoader( urls );
-            //            {
-            //                Class< ? > clazz = cl.loadClass( className );
-            //                Method method = clazz.getDeclaredMethod( "main", String[].class );
-            //                method.invoke( null, new Object[ ] { runArguments.split( " " ) } ); // the nesting into an object array prevents the expansion when varargs is applied
-            //            }
-            //            cl.close();
-            
-            String[] parameters = new String[ ] {
-                "java",
-                "-cp",
-                TEMP_DIR.getAbsolutePath(),
-                binaryFile.getName().substring( 0, binaryFile.getName().indexOf( '.' ) )
-            };
-
-            Process process = Runtime.getRuntime().exec( parameters ); // execute the file in a different process
-
-            BufferedReader standardOutput = new BufferedReader( new InputStreamReader( process.getInputStream() ) ); // the standard output from the program
-            BufferedReader errorOutput = new BufferedReader( new InputStreamReader( process.getErrorStream() ) ); // the error output from the program
-            
-            String outLine = null;
-            String errLine = null;
-
-            while ( process.isAlive()    // the process is still running
-                ||  standardOutput.ready() // or the process has closed and there is unoutputted values
-                ||  errorOutput.ready()
-                ) {
-                
-                if ( standardOutput.ready() && ( ( outLine = standardOutput.readLine() ) != null ) ) {
-                    System.out.println( outLine );
-                    System.out.flush();
-                }
-                
-                if ( errorOutput.ready() && ( ( errLine = errorOutput.readLine() ) != null ) ) {
-                    System.err.println( errLine );
-                    System.err.flush();
-                }
-
-            }
-
-            standardOutput.close();
-            errorOutput.close();
-            
-            if ( process.exitValue() != 0 ) {
-                System.err.printf( "%n!!! Exit Value = %d !!!", process.exitValue() );
-                System.err.flush();
-            }
-            
+            ExecutionService.startProcess( fileName, binaryFile );
         }
-        catch ( Exception e ) {
+        catch ( IOException e ) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Prints the time with a message along with it.
      * 
