@@ -26,31 +26,31 @@ public class JSnippet {
     //
     
     /** Arguments passed to the main method when run */
-    public static String              runArguments = "";
+    public static String                  runArguments     = "";
     
     /** Maximum number of characters in a text pane. */
-    public static int                 consoleLineLimit = 1000;
+    public static int                     consoleLineLimit = 1000;
 
     /** Our compiler for our java source. */
-    private static final JavaCompiler compiler     = ToolProvider.getSystemJavaCompiler();
+    private static final JavaCompiler     compiler         = ToolProvider.getSystemJavaCompiler();
 
     /** The temporary directory where all the program files are. */
-    public static final File          TEMP_DIR     = new File( System.getProperty( "user.home" ), ".jsnippet" );
+    public static final File              TEMP_DIR         = new File( System.getProperty( "user.home" ), ".jsnippet" );
     
     /** The default text for the editor. */
-    public static final File          DEFAULT_TEXT = new File( TEMP_DIR, "res/DefaultText.txt" );
+    public static final File              DEFAULT_TEXT     = new File( TEMP_DIR, "res/DefaultText.txt" );
     
     /** The code templates for autocompletion. */
-    public static final File          TEMPLATES    = new File( TEMP_DIR, "res/templates.txt" );
+    public static final File              TEMPLATES        = new File( TEMP_DIR, "res/templates.txt" );
     
     /** Keywords for the editor's syntax highlighter. */
-    public static final File          KEYWORDS     = new File( TEMP_DIR, "res/keywords.txt" );
+    public static final File              KEYWORDS         = new File( TEMP_DIR, "res/keywords.txt" );
 
     /** The last created .java file. */
-    private static File               sourceFile;
+    private static File                   sourceFile;
     
     /** The last created .class file. */
-    private static File               binaryFile;
+    private static File                   binaryFile;
     
     /** Date format that displays, the hour, minute, second, and millisecond of the time. */
     private static final SimpleDateFormat dateFormat       = new SimpleDateFormat( "HH:mm:ss:SSSS" );

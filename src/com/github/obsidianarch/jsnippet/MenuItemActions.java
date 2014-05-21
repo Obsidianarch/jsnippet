@@ -21,8 +21,10 @@ public class MenuItemActions {
      * 
      * @param frame
      *            The frame.
+     * 
+     * @return If the build was successful or not.
      */
-    public static void build( JSnippetFrame frame ) {
+    public static boolean build( JSnippetFrame frame ) {
         frame.getBuildConsole().getTextComponent().setText( "" );
         frame.getBuildConsole().redirectOut();
         frame.getBuildConsole().redirectErr( Color.RED, null );
@@ -32,11 +34,15 @@ public class MenuItemActions {
         String source = frame.getTextArea().getText();
         String className = JSnippet.getClassName( source );
         
-        if ( !JSnippet.compileSource( className, source ) ) {
-            JOptionPane.showMessageDialog( frame, "Check console for errors!", "Compile Errors", JOptionPane.ERROR_MESSAGE );
+        boolean built = JSnippet.compileSource( className, source );
+        
+        if ( !built ) {
+            JOptionPane.showMessageDialog( frame, "Build failed!" );
         }
         
         JSnippet.printTime( "Build Ended" );
+        
+        return built;
     }
     
     /**
@@ -69,10 +75,19 @@ public class MenuItemActions {
      *            The frame.
      */
     public static void buildAndExecute( JSnippetFrame frame ) {
-        build( frame );
-        execute( frame );
+        // only execute if the file was built
+        if ( build( frame ) ) {
+            execute( frame );
+        }
     }
     
+    /**
+     * Forces the current process to close.
+     */
+    public static void stopTool() {
+        ExecutionService.terminateProcess();
+    }
+
     /**
      * Cleans up, then exits.
      */

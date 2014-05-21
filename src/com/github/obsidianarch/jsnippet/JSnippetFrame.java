@@ -5,6 +5,7 @@ import static javax.swing.KeyStroke.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
@@ -154,6 +155,8 @@ public class JSnippetFrame extends SimpleFrame {
             addMenuItem( getKeyStroke( "control F5" ), "File", "Execute" ).setActionCommand( "execute" );
             addMenuItem( getKeyStroke( "F5" ), "File", "Build and Execute" ).setActionCommand( "buildAndExecute" );
             addSeparator( "File" );
+            addMenuItem( getKeyStroke( "control B" ), "File", "Stop Tool" ).setActionCommand( "stopTool" );
+            addSeparator( "File" );
             addMenuItem( getKeyStroke( "alt F4" ), "File", "Exit" ).setActionCommand( "exit" );
             
             addMenuItem( getKeyStroke( "control shift R" ), "Edit", "Run Arguments" ).setActionCommand( "editRunArgs" );
@@ -195,4 +198,14 @@ public class JSnippetFrame extends SimpleFrame {
     public MessageConsole getOutputConsole() {
         return outputConsole;
     }
+    
+    //
+    // Overrides
+    //
+    
+    @Override
+    public void windowClosed( WindowEvent e ) {
+        MenuItemActions.exit();
+    }
+
 }

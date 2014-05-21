@@ -31,12 +31,8 @@ public class ExecutionService {
      *            The class name to execute.
      */
     public static void startProcess( String fileName, File binaryFile ) throws IOException {
+        terminateProcess();
         
-        // process is still running
-        if ( ( currentProcess != null ) && currentProcess.isAlive() ) {
-            currentProcess.destroyForcibly(); // force the process to die
-        }
-
         // parameters passed to the process creator
         String[] parameters = new String[ ] {
             "java",
@@ -53,25 +49,41 @@ public class ExecutionService {
         OutputManager outManager = new OutputManager( System.out, standardOutput ); // manages output to System.out
         OutputManager errManager = new OutputManager( System.err, errorOutput ); // manages output to System.err
 
-        // starts output thread
+        // start output thread
         Thread outThread = new Thread( outManager );
         outThread.setName( "Standard Output Manager" );
         outThread.start();
         
-        // starts error thraed
+        // start error thraed
         Thread errThread = new Thread( errManager );
         errThread.setName( "Standard Error Manager" );
         errThread.start();
         
+        // start the exit listening thread
         Thread exitThread = new Thread( new ExitListener( currentProcess ) );
         exitThread.setName( "Exit Listener Thread" );
         exitThread.start();
     }
     
+    /**
+     * Forcibly closes the currently running process, if it is still running.
+     */
+    public static void terminateProcess() {
+        if ( ( currentProcess != null ) && currentProcess.isAlive() ) {
+            currentProcess.destroyForcibly(); // force the process to die
+        }
+    }
+
     //
     // Nested Classes
     //
 
+    /**
+     * A background thread that will wait for the process to exit and print out the exit
+     * code if it is abnormal.
+     * 
+     * @author Austin
+     */
     public static class ExitListener implements Runnable {
         
         //
@@ -85,6 +97,12 @@ public class ExecutionService {
         // Constructors
         //
 
+        /**
+         * Constructs the ExitListener for the given process.
+         * 
+         * @param process
+         *            The process on which this thread will wait to exit.
+         */
         public ExitListener( Process process ) {
             this.process = process;
         }
@@ -96,7 +114,7 @@ public class ExecutionService {
         @Override
         public void run() {
             try {
-                int exitCode = process.waitFor();
+                int exitCode = process.waitFor(); // wait for the process to exit
                 
                 if ( exitCode != 0 ) {
                     System.err.printf( "Exit code: %d%n", exitCode );
